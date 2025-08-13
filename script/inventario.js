@@ -19,17 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
     tableBody.innerHTML = '';
     data.forEach((m) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${m.nombre}</td>
-        <td id="cant-${m.id}"><strong>${m.cantidad}</strong></td>
-        <td id="disp-${m.id}">${m.metros_disponibles}</td>
-        <td class="actions-cell">
-          <button onclick="modificar(${m.id}, 'metros', 1)">+ Metro</button>
-          <button onclick="modificar(${m.id}, 'metros', -1)">– Metro</button>
-          <button onclick="modificar(${m.id}, 'cantidad', 1)">+ Manguera</button>
-          <button onclick="modificar(${m.id}, 'cantidad', -1)">– Manguera</button>
-        </td>
-      `;
+tr.innerHTML = `
+  <td>${m.nombre}</td>
+  <td id="cant-${m.id}"><strong>${m.cantidad}</strong></td>
+  <td id="disp-${m.id}">${m.metros_disponibles}</td>
+  <td class="actions-cell">
+    <button style=" background-color: rgba(241, 239, 239, 1);; padding: 5px;" onclick="modificar(${m.id}, 'metros', 1)">+ Metro</button>
+    <button style=" background-color: rgba(241, 239, 239, 1);: 5px;" onclick="modificar(${m.id}, 'metros', -1)">– Metro</button>
+    <button style=" background-color: rgba(241, 239, 239, 1);: 5px;" onclick="modificar(${m.id}, 'cantidad', 1)">+ Manguera</button>
+    <button style=" background-color: rgba(241, 239, 239, 1);: 5px;" onclick="modificar(${m.id}, 'cantidad', -1)">– Manguera</button>
+  </td>
+`;
+
+
       tableBody.appendChild(tr);
     });
   }
