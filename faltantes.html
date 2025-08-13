@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+ <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+  <title>Piezas Faltantes</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="logo.png" alt="Agro Riego Santana" class="logo"/>
+      <div><h1>Piezas que Faltan</h1></div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="form-card">
+      <h2>Agregar Pieza Faltante</h2>
+      <form id="addPiezaForm">
+        <div class="row">
+          <label>Nombre</label>
+          <input id="pName" required placeholder="Ej: Pieza X"/>
+        </div>
+        <div class="row">
+          <label>Compañía</label>
+          <input id="pCompany" placeholder="Ej: Compañía B"/>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn danger">Agregar a Faltantes</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="table-card">
+      <h2>Piezas Sin Stock</h2>
+      <table id="piezaTable">
+        <thead><tr><th>Nombre</th><th>Compañía</th><th>Acciones</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer class="footer">
+     <div class="panel-buttons">
+      <a href="index.html">🔙 Panel Principal</a>
+     </div>
+  </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./script/faltantes.js"></script>
+
+</body>
+</html>

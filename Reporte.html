@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reporte de Piezas</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="logo.png" alt="Agro Riego Santana" class="logo"/>
+      <div><h1>Reporte de Inventario y Faltantes</h1></div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Piezas Faltantes -->
+    <section class="table-card">
+      <h2>🔴 Piezas Faltantes</h2>
+      <table id="faltantesTable">
+        <thead>
+          <tr><th>Nombre</th><th>Compañía</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- Inventario General -->
+    <section class="table-card">
+      <h2>📦 Inventario de Todas las Piezas</h2>
+      <table id="inventarioTable">
+        <thead>
+          <tr><th>Nombre</th><th>Compañía</th><th>Estado</th><th>Empleado</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="panel-buttons">
+      <a href="index.html">🔙 Volver al Panel</a>
+    </div>
+  </footer>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Inicializar Supabase
+    const { createClient } = supabase;
+    const supabaseUrl = 'https://xvmohhhurbvmqimchblh.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2bW9oaGh1cmJ2bXFpbWNoYmxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwODY0MzAsImV4cCI6MjA3MDY2MjQzMH0.3BuVtYLzjfJCAy0ZTT7NIdRuo7Oa5g0XYm7wcVUt4ko';
+    const db = createClient(supabaseUrl, supabaseKey);
+
+    const faltantesTable = document.querySelector('#faltantesTable tbody');
+    const inventarioTable = document.querySelector('#inventarioTable tbody');
+
+    // Cargar faltantes
+    async function cargarFaltantes() {
+      const { data, error } = await db
+        .from('faltantes')
+        .select('nombre, compania')
+        .order('nombre');
+
+      if (error) {
+        console.error('Error al cargar faltantes:', error.message);
+        faltantesTable.innerHTML = '<tr><td colspan="2">Error al cargar</td></tr>';
+        return;
+      }
+
+      faltantesTable.innerHTML = '';
+      if (data.length === 0) {
+        faltantesTable.innerHTML = '<tr><td colspan="2">No hay piezas faltantes</td></tr>';
+        return;
+      }
+
+      data.forEach(pieza => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${pieza.nombre}</td><td>${pieza.compania || '-'}</td>`;
+        faltantesTable.appendChild(row);
+      });
+    }
+
+    // Cargar inventario
+async function cargarInventario() {
+  const { data, error } = await db
+    .from('piezas')
+    .select('nombre, company, estado, empleado:empleado_id(nombre)');
+
+  if (error) {
+    console.error('Error al cargar inventario:', error.message);
+    inventarioTable.innerHTML = '<tr><td colspan="4">Error al cargar</td></tr>';
+    return;
+  }
+
+  inventarioTable.innerHTML = '';
+
+  if (data.length === 0) {
+    inventarioTable.innerHTML = '<tr><td colspan="4">No hay piezas registradas</td></tr>';
+    return;
+  }
+
+  // ✅ Orden natural por nombre
+  data.sort((a, b) => a.nombre.localeCompare(b.nombre, undefined, { numeric: true, sensitivity: 'base' }));
+
+  // Agrupar por empleado
+  const grupos = {};
+
+  data.forEach(pieza => {
+    const nombreEmpleado = pieza.empleado?.nombre || 'Sin asignar';
+    if (!grupos[nombreEmpleado]) {
+      grupos[nombreEmpleado] = [];
+    }
+    grupos[nombreEmpleado].push(pieza);
+  });
+
+  // Crear una sección por empleado
+  for (const empleado in grupos) {
+    const tituloRow = document.createElement('tr');
+    tituloRow.innerHTML = `
+      <td colspan="4" style="background-color: #f0f0f0; font-weight: bold;">
+        👤 Empleado: ${empleado}
+      </td>
+    `;
+    inventarioTable.appendChild(tituloRow);
+
+    grupos[empleado].forEach(pieza => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${pieza.nombre}</td>
+        <td>${pieza.company || '-'}</td>
+        <td>${pieza.estado}</td>
+        <td>${pieza.empleado?.nombre || '-'}</td>
+      `;
+      inventarioTable.appendChild(row);
+    });
+  }
+}
+
+
+    // Inicializar carga
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarFaltantes();
+      cargarInventario();
+
+      // Opcional: recargar cada 30 segundos para ver en tiempo real
+      setInterval(() => {
+        cargarFaltantes();
+        cargarInventario();
+      }, 30000);
+    });
+  </script>
+</body>
+</html>

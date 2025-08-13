@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+ <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+
+  <title>Administrar Piezas</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="logo.png" alt="Agro Riego Santana" class="logo"/>
+      <div><h1>Administrar Piezas</h1></div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="form-card">
+      <h2>Agregar Nueva Pieza</h2>
+      <form id="addPiezaForm">
+        <div class="row">
+          <label>Empleado</label>
+          <select id="empleadoSelect" required></select>
+        </div>
+        <div class="row">
+          <label>Nombre Pieza</label>
+          <input id="pName" required placeholder="Ej: Pieza X"/>
+        </div>
+        <div class="row">
+          <label>Compañía</label>
+          <input id="pCompany" placeholder="Ej: Compañía B"/>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn primary">Agregar Pieza</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="table-card">
+      <h2>Lista de Piezas</h2>
+      <table id="piezasTable">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th>Empleado</th>
+            <th>Actualizar</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="panel-buttons">
+      <a href="index.html">🔙 Panel Principal</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Cambia estas variables por tus datos reales
+// Cambia estas variables por tus datos reales
+const supabaseUrl = 'https://xvmohhhurbvmqimchblh.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2bW9oaGh1cmJ2bXFpbWNoYmxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwODY0MzAsImV4cCI6MjA3MDY2MjQzMH0.3BuVtYLzjfJCAy0ZTT7NIdRuo7Oa5g0XYm7wcVUt4ko';
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+const empleadoSelect = document.getElementById('empleadoSelect');
+const piezasTableBody = document.querySelector('#piezasTable tbody');
+const addPiezaForm = document.getElementById('addPiezaForm');
+
+// Cargar empleados para el selector
+async function cargarEmpleados() {
+  const { data: empleados, error } = await supabaseClient
+    .from('empleados')
+    .select('id, nombre')
+    .order('nombre');
+
+  if (error) {
+    alert('Error al cargar empleados: ' + error.message);
+    return;
+  }
+
+  empleadoSelect.innerHTML = '';
+  empleados.forEach(emp => {
+    const option = document.createElement('option');
+    option.value = emp.id;
+    option.textContent = emp.nombre;
+    empleadoSelect.appendChild(option);
+  });
+}
+
+// Función para asignar clase CSS según estado
+function asignarClaseEstado(selectElem, estado) {
+  selectElem.classList.remove('estado-agotado', 'estado-pocos', 'estado-completo');
+  if (estado === 'agotado') selectElem.classList.add('estado-agotado');
+  else if (estado === 'pocos') selectElem.classList.add('estado-pocos');
+  else if (estado === 'completo') selectElem.classList.add('estado-completo');
+}
+
+// Cargar piezas filtradas por empleado seleccionado
+async function cargarPiezas() {
+  const empleado_id = empleadoSelect.value;
+  if (!empleado_id) {
+    piezasTableBody.innerHTML = '<tr><td colspan="4">Selecciona un empleado para ver sus piezas</td></tr>';
+    return;
+  }
+
+  const { data: piezas, error } = await supabaseClient
+    .from('piezas')
+    .select('id, nombre, company, estado, empleado_id, empleado:empleado_id(nombre)')
+    .eq('empleado_id', empleado_id);
+
+  if (error) {
+    alert('Error al cargar piezas: ' + error.message);
+    return;
+  }
+
+  piezas.sort((a, b) => a.nombre.localeCompare(b.nombre, undefined, { numeric: true, sensitivity: 'base' }));
+
+  piezasTableBody.innerHTML = '';
+  if (piezas.length === 0) {
+    piezasTableBody.innerHTML = '<tr><td colspan="4">No hay piezas para este empleado.</td></tr>';
+    return;
+  }
+
+
+
+piezas.forEach(pieza => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${pieza.nombre}</td>
+    <td>
+      <select id="select-${pieza.id}">
+        <option value="agotado" ${pieza.estado === 'agotado' ? 'selected' : ''}>Agotado</option>
+        <option value="pocos" ${pieza.estado === 'pocos' ? 'selected' : ''}>Pocos</option>
+        <option value="completo" ${pieza.estado === 'completo' ? 'selected' : ''}>Completo</option>
+      </select>
+    </td>
+    <td>${pieza.empleado ? pieza.empleado.nombre : 'Desconocido'}</td>
+    <td><button data-id="${pieza.id}">Actualizar</button></td>
+  `;
+  piezasTableBody.appendChild(tr);
+
+
+
+    const selectEstado = document.getElementById(`select-${pieza.id}`);
+    asignarClaseEstado(selectEstado, pieza.estado);
+    selectEstado.addEventListener('change', () => {
+      asignarClaseEstado(selectEstado, selectEstado.value);
+    });
+  });
+}
+
+// Insertar nueva pieza
+addPiezaForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const nombre = document.getElementById('pName').value.trim();
+  const company = document.getElementById('pCompany').value.trim();
+  const empleado_id = empleadoSelect.value;
+
+  if (!nombre || !empleado_id) {
+    alert('Por favor, completa todos los campos requeridos.');
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from('piezas')
+    .insert([{ nombre, company, estado: 'completo', empleado_id }]);
+
+  if (error) {
+    alert('Error al agregar pieza: ' + error.message);
+  } else {
+    alert('Pieza agregada correctamente');
+    addPiezaForm.reset();
+    cargarPiezas();
+  }
+});
+
+// Actualizar estado al hacer click en botón actualizar
+// Cuando haces click en "Actualizar" para cambiar el estado
+piezasTableBody.addEventListener('click', async (e) => {
+  if (e.target.tagName === 'BUTTON') {
+    const id = e.target.getAttribute('data-id');
+    const select = document.getElementById(`select-${id}`);
+    const nuevoEstado = select.value;
+    const empleado_id = empleadoSelect.value;
+
+    // Actualizar estado en tabla piezas
+    const { data: piezaActualizada, error: errorUpdate } = await supabaseClient
+      .from('piezas')
+      .update({ estado: nuevoEstado, empleado_id })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (errorUpdate) {
+      alert('Error al actualizar estado: ' + errorUpdate.message);
+      return;
+    }
+
+    alert('Estado actualizado correctamente');
+
+    // Si el nuevo estado es "agotado", agregar pieza a tabla faltantes
+if (nuevoEstado === 'agotado') {
+  const { data, error: errorInsert } = await supabaseClient
+    .from('faltantes')
+    .insert([{
+      nombre: piezaActualizada.nombre,
+      compania: piezaActualizada.company || ''
+      // NO enviamos empleado_id porque no existe en la tabla faltantes
+    }]);
+
+  if (errorInsert) {
+    console.error('Error al insertar en faltantes:', errorInsert.message);
+    alert('Error al agregar a faltantes: ' + errorInsert.message);
+  } else {
+    console.log('Pieza agregada a faltantes.');
+  }
+}
+
+
+    // Recargar lista
+    cargarPiezas();
+  }
+});
+
+
+// Cuando cambies de empleado, carga las piezas de ese empleado
+empleadoSelect.addEventListener('change', cargarPiezas);
+
+// Inicialización
+cargarEmpleados().then(() => {
+  if (empleadoSelect.value) {
+    cargarPiezas();
+  } else {
+    piezasTableBody.innerHTML = '<tr><td colspan="4">Selecciona un empleado para ver sus piezas</td></tr>';
+  }
+});
+
+  </script>
+</body>
+</html>
