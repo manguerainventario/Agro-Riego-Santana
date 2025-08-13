@@ -246,7 +246,11 @@ td[id^="disp-"] {
       max-width: 200px;
     }
 
-    
+    abbr, [title] {
+  text-decoration: none;
+  border-bottom: none;
+  cursor: default;
+}
 
     .panel-buttons a {
       text-align: center;
