@@ -1,1 +1,0 @@
-Versión 2 con tablas separadas: Mangueras y Sin Stock.
