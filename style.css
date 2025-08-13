@@ -305,3 +305,23 @@ select.estado-completo {
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 
 }
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-responsive table {
+  min-width: 600px; /* asegura que se dispare el scroll en móviles */
+}
+
+@media (max-width: 600px) {
+  .table-card {
+    padding: 10px;
+  }
+
+  .table-responsive {
+    -webkit-overflow-scrolling: touch; /* scroll suave en iOS */
+  }
+  
+}
