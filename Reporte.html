@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <!-- Icono para navegadores y dispositivos -->
-  <link rel="icon" href="logo.png" type="image/png" />
   <title>Reporte de Piezas</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -62,10 +60,12 @@
 
     // Cargar faltantes
     async function cargarFaltantes() {
-      const { data, error } = await db
-        .from('faltantes')
-        .select('nombre, compania')
-        .order('nombre');
+const { data, error } = await db
+  .from('faltantes')
+  .select('nombre, compania')
+  .order('compania', { ascending: true })
+  .order('nombre', { ascending: true });
+
 
       if (error) {
         console.error('Error al cargar faltantes:', error.message);
@@ -157,4 +157,3 @@ async function cargarInventario() {
   </script>
 </body>
 </html>
-
