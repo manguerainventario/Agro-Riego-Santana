@@ -61,11 +61,47 @@
         padding: 14px;
       }
     }
+
+.info-inventario {
+  display: none; /* Oculto por defecto */
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  animation: pulso 2s ease-in-out infinite;
+}
+
+
+/* Animación tipo pulso */
+@keyframes pulso {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
   </style>
 </head>
 <body>
   <div class="panel">
-    <a href="index.html"><img src="logo.png" alt="Agro Riego Santana" class="logo" /></a>
+    <p class="info-inventario" id="mensaje-inventario">📅 Hoy toca inventario</p>
+
+    <img src="logo.png" alt="Agro Riego Santana" class="logo" />
     <h1>Panel Principal</h1>
 
     <div class="panel-buttons">
@@ -76,7 +112,20 @@
       <a href="agregar.html">➕ Agregar Nueva Manguera</a>
     </div>
   </div>
+  <script>
+  // Obtener el día de la semana actual (0 = domingo, 1 = lunes, ..., 6 = sábado)
+  const diaActual = new Date().getDay();
+
+  // Seleccionar el elemento del mensaje
+  const mensaje = document.getElementById("mensaje-inventario");
+
+  // Mostrar solo si es martes (2) o viernes (5)
+  if (diaActual === 2 || diaActual === 5) {
+    mensaje.style.display = "flex"; // o "block"
+  } else {
+    mensaje.style.display = "none";
+  }
+</script>
+
 </body>
 </html>
-
-
