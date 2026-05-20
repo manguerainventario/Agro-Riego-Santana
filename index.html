@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Icono para navegadores y dispositivos -->
+  <link rel="icon" href="logo.png" type="image/png" />
+  <title>Panel Principal | Agro Riego Santana</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #f7fff8 0%, #e2f4e6 100%);
+    }
+
+    .panel h1 {
+      color: #1f9b3a;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .panel-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .panel-buttons a {
+      text-align: center;
+      text-decoration: none;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      background-color: #1f9b3a;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: background 0.2s ease;
+    }
+
+    .panel-buttons a:hover {
+      background-color: #187b2e;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .panel-buttons a {
+        font-size: 15px;
+        padding: 14px;
+      }
+    }
+
+.info-inventario {
+  display: none; /* Oculto por defecto */
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  animation: pulso 2s ease-in-out infinite;
+}
+
+
+/* Animación tipo pulso */
+@keyframes pulso {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <p class="info-inventario" id="mensaje-inventario">📅 Hoy toca inventario</p>
+
+    <img src="logo.png" alt="Agro Riego Santana" class="logo" />
+    <h1>Panel Principal</h1>
+
+    <div class="panel-buttons">
+      <a href="inventario.html">📦 Inventario de Mangueras</a>
+      <!--<a href="piezas.html">❌ Inventario de Piezas</a>-->
+      <a href="faltantes.html">⚠️ Piezas Faltantes Inventario A</a>
+      <a href="faltantesB.html">⚠️ Piezas Faltantes Inventario B</a>
+     <!-- <a href="Reporte.html">🔍 Reporte de Inventario y Faltantes</a> -->
+      <a href="agregar.html">➕ Agregar Nueva Manguera</a>
+    </div>
+  </div>
+  <script>
+  // Obtener el día de la semana actual (0 = domingo, 1 = lunes, ..., 6 = sábado)
+  const diaActual = new Date().getDay();
+
+  // Seleccionar el elemento del mensaje
+  const mensaje = document.getElementById("mensaje-inventario");
+
+  // Mostrar solo si es martes (2) o viernes (5)
+  if (diaActual === 2 || diaActual === 5) {
+    mensaje.style.display = "flex"; // o "block"
+  } else {
+    mensaje.style.display = "none";
+  }
+</script>
+
+</body>
+</html>
